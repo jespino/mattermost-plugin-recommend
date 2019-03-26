@@ -15,6 +15,7 @@ const (
 
 type DBStore struct {
 	conn *sql.DB
+	sq   sq.StatementBuilderType
 }
 
 func NewDBStore(driverName, dataSource string) (*DBStore, error) {
@@ -22,7 +23,15 @@ func NewDBStore(driverName, dataSource string) (*DBStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DBStore{conn: db}, nil
+	if driverName == "postgres" {
+	}
+
+	builder := sq.StatementBuilder.PlaceholderFormat(sq.Question)
+	if driverName == model.DATABASE_DRIVER_POSTGRES {
+		builder = builder.PlaceholderFormat(sq.Dollar)
+	}
+
+	return &DBStore{conn: db, sq: builder}, nil
 }
 
 func (db *DBStore) Close() {
@@ -36,7 +45,7 @@ func (db *DBStore) MostActiveChannels(userID, teamID string) ([]string, error) {
 	}
 
 	lastWeek := model.GetMillis() - (ActivePeriodInMinutes * 60 * 1000)
-	query := sq.Select("C.Name").
+	query := db.sq.Select("C.Name").
 		From("Posts AS P").
 		LeftJoin("Channels AS C ON P.ChannelId = C.Id").
 		Where(sq.Gt{"P.CreateAt": lastWeek}).
@@ -68,7 +77,7 @@ func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]string, error
 		return nil, err
 	}
 
-	query := sq.Select("C.Name").
+	query := db.sq.Select("C.Name").
 		From("ChannelMembers AS CM").
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"C.TeamId": teamID}).
@@ -96,7 +105,7 @@ func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]string, error
 }
 
 func (db *DBStore) getChannelMembers(channelID string) ([]string, error) {
-	query := sq.Select("UserId").
+	query := db.sq.Select("UserId").
 		From("ChannelMembers").
 		Where(sq.Eq{"ChannelId": channelID})
 
@@ -127,7 +136,7 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 		return nil, err
 	}
 
-	query := sq.Select("C.Name").
+	query := db.sq.Select("C.Name").
 		From("ChannelMembers AS CM").
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"CM.UserId": otherMembersInChannel}).
@@ -154,7 +163,7 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 }
 
 func (db *DBStore) getMyChannelsForTeam(userID string, teamID string) ([]string, error) {
-	query := sq.Select("ChannelId").
+	query := db.sq.Select("ChannelId").
 		From("ChannelMembers").
 		LeftJoin("Channels ON Channels.Id=ChannelMembers.ChannelId").
 		Where(sq.Eq{"UserId": userID}).
@@ -181,7 +190,7 @@ func (db *DBStore) getMyCoMembersForTeam(userID string, teamID string) ([]string
 		return nil, err
 	}
 
-	query := sq.Select("UserId").
+	query := db.sq.Select("UserId").
 		From("ChannelMembers").
 		LeftJoin("Channels AS C ON ChannelMembers.ChannelId=C.Id").
 		Where(sq.Eq{"ChannelId": myChannels}).
@@ -214,7 +223,7 @@ func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]
 		return nil, err
 	}
 
-	query := sq.Select("C.Name").
+	query := db.sq.Select("C.Name").
 		From("ChannelMembers AS CM").
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
