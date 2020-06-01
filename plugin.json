@@ -1,5 +1,5 @@
 {
-    "id": "com.mattermost.recommend-plugin",
+    "id": "com.github.jespino.recomend",
     "name": "Recommend",
     "description": "This plugin recommends you channels",
     "version": "0.0.1",

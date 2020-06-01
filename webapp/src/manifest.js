@@ -2,11 +2,11 @@
 
 const manifest = JSON.parse(`
 {
-    "id": "com.mattermost.recommend-plugin",
+    "id": "com.github.jespino.recomend",
     "name": "Recommend",
     "description": "This plugin recommends you channels",
     "version": "0.0.1",
-    "min_server_version": "5.12.0",
+    "min_server_version": "5.16.0",
     "server": {
         "executables": {
             "linux-amd64": "server/dist/plugin-linux-amd64",
