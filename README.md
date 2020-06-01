@@ -4,7 +4,7 @@ This plugin recommends you channels based on your memberships and the most popul
 
 ## Quick start
 
-__Requires Mattermost 5.2 or higher.__
+__Requires Mattermost 5.16 or higher.__
 
 1. Install the plugin
     1. Download the latest version of the plugin from the GitHub releases page
