@@ -20,8 +20,6 @@ import (
 type configuration struct {
 	RecommendOnJoinTeam    bool
 	RecommendOnJoinChannel bool
-	DBDriverName           string
-	DBDataSource           string
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if

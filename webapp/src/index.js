@@ -1,5 +1,10 @@
-import {id as pluginId} from './manifest';
+import manifest from './manifest';
 
-export default class Plugin {}
+export default class Plugin {
+    // eslint-disable-next-line no-unused-vars
+    initialize(registry, store) {
+        // @see https://developers.mattermost.com/extend/plugins/webapp/reference/
+    }
+}
 
-window.registerPlugin(pluginId, new Plugin());
+window.registerPlugin(manifest.id, new Plugin());

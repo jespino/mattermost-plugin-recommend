@@ -3,6 +3,7 @@
     "name": "Recommend",
     "description": "This plugin recommends you channels",
     "version": "0.0.1",
+    "min_server_version": "5.16.0",
     "server": {
         "executables": {
             "linux-amd64": "server/dist/plugin-linux-amd64",
@@ -26,16 +27,6 @@
                 "key": "RecommendOnJoinChannel",
                 "display_name": "Recommend at channel join",
                 "type": "bool"
-            },
-            {
-                "key": "DBDriverName",
-                "display_name": "Database Driver Name (mysql or postgresql)",
-                "type": "text"
-            },
-            {
-                "key": "DBDataSource",
-                "display_name": "Database DSN connection string.",
-                "type": "text"
             }
         ]
     }

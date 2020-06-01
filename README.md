@@ -10,6 +10,5 @@ __Requires Mattermost 5.2 or higher.__
     1. Download the latest version of the plugin from the GitHub releases page
     2. In Mattermost, go the System Console -> Plugins -> Management
     3. Upload the plugin
-2. Configure your database credentials and the other plugin settings in System Console -> Plugins -> Recommend
-3. Enable de plugin with the new configuration.
-4. Start using it running the `/recommend` slash command.
+2. Enable de plugin.
+3. Start using it running the `/recommend` slash command.

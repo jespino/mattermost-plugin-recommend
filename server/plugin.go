@@ -1,15 +1,14 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/mattermost/mattermost-server/model"
-	"github.com/mattermost/mattermost-server/plugin"
+	"github.com/mattermost/mattermost-server/v5/model"
+	"github.com/mattermost/mattermost-server/v5/plugin"
 )
 
 const (
@@ -24,15 +23,15 @@ type Plugin struct {
 }
 
 func (p *Plugin) OnActivate() error {
-	if p.configuration.DBDriverName == "" || p.configuration.DBDataSource == "" {
-		return errors.New("You need to properly configure your database access")
-	}
-	store, err := NewDBStore(p.configuration.DBDriverName, p.configuration.DBDataSource)
+	config := p.API.GetUnsanitizedConfig()
+	store, err := NewDBStore(*config.SqlSettings.DriverName, *config.SqlSettings.DataSource)
 	if err != nil {
 		return err
 	}
 	p.Store = store
-	p.API.RegisterCommand(getCommand())
+	if err = p.API.RegisterCommand(getCommand()); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -47,7 +46,7 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 }
 
 func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.ChannelMember, user *model.User) {
-	if !p.configuration.RecommendOnJoinChannel {
+	if !p.getConfiguration().RecommendOnJoinChannel {
 		return
 	}
 	time.Sleep(DelayInSecons * time.Second)
@@ -81,7 +80,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 }
 
 func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMember, user *model.User) {
-	if !p.configuration.RecommendOnJoinTeam {
+	if !p.getConfiguration().RecommendOnJoinTeam {
 		return
 	}
 	time.Sleep(DelayInSecons * time.Second)

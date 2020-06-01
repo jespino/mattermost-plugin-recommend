@@ -6,7 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	"github.com/mattermost/mattermost-server/model"
+	"github.com/mattermost/mattermost-server/v5/model"
 )
 
 const (
@@ -22,8 +22,6 @@ func NewDBStore(driverName, dataSource string) (*DBStore, error) {
 	db, err := sql.Open(driverName, dataSource)
 	if err != nil {
 		return nil, err
-	}
-	if driverName == "postgres" {
 	}
 
 	builder := sq.StatementBuilder.PlaceholderFormat(sq.Question)
