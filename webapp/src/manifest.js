@@ -5,6 +5,9 @@ const manifest = JSON.parse(`
     "id": "com.github.jespino.recomend",
     "name": "Recommend",
     "description": "This plugin recommends you channels",
+    "homepage_url": "https://github.com/jespino/mattermost-plugin-recommend",
+    "support_url": "https://github.com/jespino/mattermost-plugin-recommend/issues",
+    "icon_path": "assets/icon.svg",
     "version": "0.0.1",
     "min_server_version": "5.16.0",
     "server": {
@@ -26,7 +29,7 @@ const manifest = JSON.parse(`
                 "key": "RecommendOnJoinTeam",
                 "display_name": "Recommend at team join",
                 "type": "bool",
-                "help_text": "",
+                "help_text": "When user joins to a team, recommend bot is going to recommend interesting channels in that team to him.",
                 "placeholder": "",
                 "default": null
             },
@@ -34,7 +37,7 @@ const manifest = JSON.parse(`
                 "key": "RecommendOnJoinChannel",
                 "display_name": "Recommend at channel join",
                 "type": "bool",
-                "help_text": "",
+                "help_text": "When user joins to a channel, recommend bot is going to recommend other channels in the team based on the people in that channel.",
                 "placeholder": "",
                 "default": null
             }

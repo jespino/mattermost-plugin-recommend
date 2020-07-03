@@ -28,6 +28,7 @@ func NewDBStore(driverName, dataSource string) (*DBStore, error) {
 	if driverName == model.DATABASE_DRIVER_POSTGRES {
 		builder = builder.PlaceholderFormat(sq.Dollar)
 	}
+	builder = builder.RunWith(db)
 
 	return &DBStore{conn: db, sq: builder}, nil
 }
@@ -53,7 +54,7 @@ func (db *DBStore) MostActiveChannels(userID, teamID string) ([]string, error) {
 		GroupBy("C.Name").
 		OrderBy("Count(P.Id) DESC").
 		Limit(3)
-	rows, err := query.RunWith(db.conn).Query()
+	rows, err := query.Query()
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +87,7 @@ func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]string, error
 		OrderBy("Count(CM.UserId) DESC").
 		Limit(3)
 
-	rows, err := query.RunWith(db.conn).Query()
+	rows, err := query.Query()
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +108,7 @@ func (db *DBStore) getChannelMembers(channelID string) ([]string, error) {
 		From("ChannelMembers").
 		Where(sq.Eq{"ChannelId": channelID})
 
-	rows, err := query.RunWith(db.conn).Query()
+	rows, err := query.Query()
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +145,7 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 		GroupBy("C.Name").
 		OrderBy("Count(CM.UserId) DESC").
 		Limit(3)
-	rows, err := query.RunWith(db.conn).Query()
+	rows, err := query.Query()
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +167,7 @@ func (db *DBStore) getMyChannelsForTeam(userID string, teamID string) ([]string,
 		LeftJoin("Channels ON Channels.Id=ChannelMembers.ChannelId").
 		Where(sq.Eq{"UserId": userID}).
 		Where(sq.Eq{"TeamId": teamID})
-	rows, err := query.RunWith(db.conn).Query()
+	rows, err := query.Query()
 	if err != nil {
 		return nil, err
 	}
@@ -195,7 +196,7 @@ func (db *DBStore) getMyCoMembersForTeam(userID string, teamID string) ([]string
 		Where(sq.NotEq{"Name": "town-square"}).
 		Where(sq.NotEq{"UserId": userID})
 
-	rows, err := query.RunWith(db.conn).Query()
+	rows, err := query.Query()
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +233,7 @@ func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]
 		OrderBy("Count(CM.UserId) DESC").
 		Limit(3)
 
-	rows, err := query.RunWith(db.conn).Query()
+	rows, err := query.Query()
 	if err != nil {
 		return nil, err
 	}

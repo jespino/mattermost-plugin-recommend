@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/plugin"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -20,6 +21,7 @@ type Plugin struct {
 	configurationLock sync.RWMutex
 	configuration     *configuration
 	Store             *DBStore
+	botID             string
 }
 
 func (p *Plugin) OnActivate() error {
@@ -32,6 +34,24 @@ func (p *Plugin) OnActivate() error {
 	if err = p.API.RegisterCommand(getCommand()); err != nil {
 		return err
 	}
+
+	recommendBot := &model.Bot{
+		Username:    "recommend-bot",
+		DisplayName: "Recommend Bot",
+		Description: "A bot account created by the com.github.jespino.recommend plugin",
+	}
+
+	options := []plugin.EnsureBotOption{
+		plugin.ProfileImagePath("assets/icon.png"),
+	}
+
+	botID, ensureBotError := p.Helpers.EnsureBot(recommendBot, options...)
+	if ensureBotError != nil {
+		return errors.Wrap(ensureBotError, "failed to ensure recommend bot user.")
+	}
+
+	p.botID = botID
+
 	return nil
 }
 
@@ -69,6 +89,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	}
 	message := channelsMessage("Other people who joined this channel also joined this other channels", suggestions)
 	post := model.Post{
+		UserId:    p.botID,
 		ChannelId: channelMember.ChannelId,
 		Message:   fmt.Sprintf("%s\nmaybe you are interested in joining them too", message),
 	}
@@ -105,6 +126,7 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		return
 	}
 	post := model.Post{
+		UserId:    p.botID,
 		ChannelId: defaultChannel.Id,
 		Message:   message,
 	}

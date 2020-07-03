@@ -21,13 +21,13 @@ func getCommand() *model.Command {
 	}
 }
 
-func (p *Plugin) getCommandResponse(responseType, text string) *model.CommandResponse {
-	return &model.CommandResponse{
-		ResponseType: responseType,
-		Text:         text,
-		Username:     "Mattermost Recommend",
-		Type:         model.POST_DEFAULT,
+func (p *Plugin) sendResponse(userID string, channelID string, text string) {
+	post := model.Post{
+		UserId:    p.botID,
+		ChannelId: channelID,
+		Message:   text,
 	}
+	p.API.SendEphemeralPost(userID, &post)
 }
 
 func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
@@ -43,37 +43,43 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 	}
 
 	if action != "" {
-		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, commandHelp), nil
+		p.sendResponse(args.UserId, args.ChannelId, commandHelp)
+		return &model.CommandResponse{}, nil
 	}
 
 	message := ""
 
 	channels, err := p.Store.MostActiveChannels(args.UserId, args.TeamId)
 	if err != nil {
-		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
+		p.sendResponse(args.UserId, args.ChannelId, err.Error())
+		return &model.CommandResponse{}, nil
 	}
 	message += channelsMessage("Most active channels for the current team", channels)
 
 	channels, err = p.Store.MostPopulatedChannels(args.UserId, args.TeamId)
 	if err != nil {
-		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
+		p.sendResponse(args.UserId, args.ChannelId, err.Error())
+		return &model.CommandResponse{}, nil
 	}
 	message += channelsMessage("Most populated channels for the current team", channels)
 
 	channels, err = p.Store.MostPopularChannelsByChannel(args.UserId, args.ChannelId, args.TeamId)
 	if err != nil {
-		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
+		p.sendResponse(args.UserId, args.ChannelId, err.Error())
+		return &model.CommandResponse{}, nil
 	}
 	message += channelsMessage("Suggested channels for the current team (based on the users of the current channel)", channels)
 
 	channels, err = p.Store.MostPopularChannelsByUserCoMembers(args.UserId, args.TeamId)
 	if err != nil {
-		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
+		p.sendResponse(args.UserId, args.ChannelId, err.Error())
+		return &model.CommandResponse{}, nil
 	}
 	message += channelsMessage("Suggested channels for the current team (based on the users the channels that you are member)", channels)
 
 	if message == "" {
-		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, "No recomendations found for you"), nil
+		message = "No recomendations found for you"
 	}
-	return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, message), nil
+	p.sendResponse(args.UserId, args.ChannelId, message)
+	return &model.CommandResponse{}, nil
 }
