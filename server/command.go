@@ -31,6 +31,17 @@ func (p *Plugin) getCommandResponse(responseType, text string) *model.CommandRes
 	}
 }
 
+func channelsMessage(text string, channels []string) string {
+	if len(channels) == 0 {
+		return ""
+	}
+	channelsList := ""
+	for _, channel := range channels {
+		channelsList += fmt.Sprintf("~%s ", channel)
+	}
+	return fmt.Sprintf("%s: %s\n\n", text, channelsList)
+}
+
 func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
 	split := strings.Fields(args.Command)
 	command := split[0]
@@ -53,49 +64,25 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 	if err != nil {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
 	}
-	if len(channels) > 0 {
-		channelsList := ""
-		for _, channel := range channels {
-			channelsList += fmt.Sprintf("~%s ", channel)
-		}
-		message += fmt.Sprintf("Most active channels for the current team: %s\n\n", channelsList)
-	}
+	message += channelsMessage("Most active channels for the current team", channels)
 
 	channels, err = p.GetMostPopulatedChannelsForTeam(args.UserId, args.TeamId)
 	if err != nil {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
 	}
-	if len(channels) > 0 {
-		channelsList := ""
-		for _, channel := range channels {
-			channelsList += fmt.Sprintf("~%s ", channel)
-		}
-		message += fmt.Sprintf("Most populated channels for the current team: %s\n\n", channelsList)
-	}
+	message += channelsMessage("Most populated channels for the current team", channels)
 
 	channels, err = p.GetMostPopularChannelsForTheChannelMembersOfAChannel(args.UserId, args.ChannelId, args.TeamId)
 	if err != nil {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
 	}
-	if len(channels) > 0 {
-		channelsList := ""
-		for _, channel := range channels {
-			channelsList += fmt.Sprintf("~%s ", channel)
-		}
-		message += fmt.Sprintf("Suggested channels for the current team (based on the users of the current channel): %s\n\n", channelsList)
-	}
+	message += channelsMessage("Suggested channels for the current team (based on the users of the current channel)", channels)
 
 	channels, err = p.GetMostPopularChannelsForTheChannelMembersOfMyChannels(args.UserId, args.TeamId)
 	if err != nil {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
 	}
-	if len(channels) > 0 {
-		channelsList := ""
-		for _, channel := range channels {
-			channelsList += fmt.Sprintf("~%s ", channel)
-		}
-		message += fmt.Sprintf("Suggested channels for the current team (based on the users the channels that you are member): %s\n\n", channelsList)
-	}
+	message += channelsMessage("Suggested channels for the current team (based on the users the channels that you are member)", channels)
 
 	if message == "" {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, "No recomendations found for you"), nil
