@@ -118,7 +118,11 @@ endif
 
 ## Builds and bundles the plugin.
 .PHONY: dist
+ifneq ($(HAS_WEBAPP),)
 dist:	apply server webapp bundle
+else
+dist:	apply server bundle
+endif
 
 ## Builds and installs the plugin to a server.
 .PHONY: deploy
