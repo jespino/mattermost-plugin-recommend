@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/mattermost/mattermost-server/v5/plugin"
@@ -29,17 +28,6 @@ func (p *Plugin) getCommandResponse(responseType, text string) *model.CommandRes
 		Username:     "Mattermost Recommend",
 		Type:         model.POST_DEFAULT,
 	}
-}
-
-func channelsMessage(text string, channels []string) string {
-	if len(channels) == 0 {
-		return ""
-	}
-	channelsList := ""
-	for _, channel := range channels {
-		channelsList += fmt.Sprintf("~%s ", channel)
-	}
-	return fmt.Sprintf("%s: %s\n\n", text, channelsList)
 }
 
 func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {

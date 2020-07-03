@@ -64,19 +64,15 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-
-	if len(suggestions) > 0 {
-		formattedSuggestions := ""
-		for _, suggestion := range suggestions {
-			formattedSuggestions += "~" + suggestion + " "
-		}
-
-		post := model.Post{
-			ChannelId: channelMember.ChannelId,
-			Message:   fmt.Sprintf("Other people who joined this channel also joined this other channels: %s\nmaybe you are interested in joining them too", formattedSuggestions),
-		}
-		p.API.SendEphemeralPost(channelMember.UserId, &post)
+	if len(suggestions) == 0 {
+		return
 	}
+	message := channelsMessage("Other people who joined this channel also joined this other channels", suggestions)
+	post := model.Post{
+		ChannelId: channelMember.ChannelId,
+		Message:   fmt.Sprintf("%s\nmaybe you are interested in joining them too", message),
+	}
+	p.API.SendEphemeralPost(channelMember.UserId, &post)
 }
 
 func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMember, user *model.User) {
@@ -85,31 +81,22 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	}
 	time.Sleep(DelayInSecons * time.Second)
 
+	message := ""
+
 	suggestions, err := p.Store.MostActiveChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-
-	message := ""
-	if len(suggestions) > 0 {
-		formattedSuggestions := ""
-		for _, suggestion := range suggestions {
-			formattedSuggestions += "~" + suggestion + " "
-		}
-		message += fmt.Sprintf("The most active channels in this team lately are: %s\n", formattedSuggestions)
-	}
+	message += channelsMessage("The most active channels in this team lately are", suggestions)
 
 	suggestions, err = p.Store.MostPopulatedChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
+	message += channelsMessage("The most popular channels in this team are", suggestions)
 
-	if len(suggestions) > 0 {
-		formattedSuggestions := ""
-		for _, suggestion := range suggestions {
-			formattedSuggestions += "~" + suggestion + " "
-		}
-		message += fmt.Sprintf("The most popular channels in this team are: %s\n", formattedSuggestions)
+	if message == "" {
+		return
 	}
 
 	defaultChannel, appErr := p.API.GetChannelByName(teamMember.TeamId, "town-square", false)
