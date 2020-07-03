@@ -60,7 +60,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 		return
 	}
 
-	suggestions, err := p.GetMostPopularChannelsForTheChannelMembersOfAChannel(channelMember.UserId, channelMember.ChannelId, channel.TeamId)
+	suggestions, err := p.Store.MostPopularChannelsByChannel(channelMember.UserId, channelMember.ChannelId, channel.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
@@ -85,7 +85,7 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	}
 	time.Sleep(DelayInSecons * time.Second)
 
-	suggestions, err := p.GetMostActiveChannelsForTeam(teamMember.UserId, teamMember.TeamId)
+	suggestions, err := p.Store.MostActiveChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
@@ -99,7 +99,7 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		message += fmt.Sprintf("The most active channels in this team lately are: %s\n", formattedSuggestions)
 	}
 
-	suggestions, err = p.GetMostPopulatedChannelsForTeam(teamMember.UserId, teamMember.TeamId)
+	suggestions, err = p.Store.MostPopulatedChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}

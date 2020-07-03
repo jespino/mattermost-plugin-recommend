@@ -60,25 +60,25 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 
 	message := ""
 
-	channels, err := p.GetMostActiveChannelsForTeam(args.UserId, args.TeamId)
+	channels, err := p.Store.MostActiveChannels(args.UserId, args.TeamId)
 	if err != nil {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
 	}
 	message += channelsMessage("Most active channels for the current team", channels)
 
-	channels, err = p.GetMostPopulatedChannelsForTeam(args.UserId, args.TeamId)
+	channels, err = p.Store.MostPopulatedChannels(args.UserId, args.TeamId)
 	if err != nil {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
 	}
 	message += channelsMessage("Most populated channels for the current team", channels)
 
-	channels, err = p.GetMostPopularChannelsForTheChannelMembersOfAChannel(args.UserId, args.ChannelId, args.TeamId)
+	channels, err = p.Store.MostPopularChannelsByChannel(args.UserId, args.ChannelId, args.TeamId)
 	if err != nil {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
 	}
 	message += channelsMessage("Suggested channels for the current team (based on the users of the current channel)", channels)
 
-	channels, err = p.GetMostPopularChannelsForTheChannelMembersOfMyChannels(args.UserId, args.TeamId)
+	channels, err = p.Store.MostPopularChannelsByUserCoMembers(args.UserId, args.TeamId)
 	if err != nil {
 		return p.getCommandResponse(model.COMMAND_RESPONSE_TYPE_EPHEMERAL, err.Error()), nil
 	}
