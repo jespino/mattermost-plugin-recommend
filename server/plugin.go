@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DelayInSecons = 2
+	DelayInSecons = 6
 )
 
 type Plugin struct {
