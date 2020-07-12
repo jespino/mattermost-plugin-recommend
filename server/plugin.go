@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DelayInSecons = 6
+	delayInSecons = 6
 )
 
 type Plugin struct {
@@ -69,7 +69,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	if !p.getConfiguration().RecommendOnJoinChannel {
 		return
 	}
-	time.Sleep(DelayInSecons * time.Second)
+	time.Sleep(delayInSecons * time.Second)
 
 	channel, appErr := p.API.GetChannel(channelMember.ChannelId)
 	if appErr != nil {
@@ -100,7 +100,7 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	if !p.getConfiguration().RecommendOnJoinTeam {
 		return
 	}
-	time.Sleep(DelayInSecons * time.Second)
+	time.Sleep(delayInSecons * time.Second)
 
 	message := ""
 
