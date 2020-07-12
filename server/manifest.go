@@ -12,7 +12,7 @@ var manifest *model.Manifest
 
 const manifestStr = `
 {
-  "id": "com.github.jespino.recomend",
+  "id": "com.github.jespino.recommend",
   "name": "Recommend",
   "description": "This plugin recommends you channels",
   "homepage_url": "https://github.com/jespino/mattermost-plugin-recommend",
@@ -36,7 +36,7 @@ const manifestStr = `
         "key": "RecommendOnJoinTeam",
         "display_name": "Recommend at team join",
         "type": "bool",
-        "help_text": "When user joins to a team, recommend bot is going to recommend interesting channels in that team to him.",
+        "help_text": "When user joins to a team, recommend bot is going to recommend interesting channels in that team.",
         "placeholder": "",
         "default": null
       },

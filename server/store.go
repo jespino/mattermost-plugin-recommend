@@ -183,12 +183,7 @@ func (db *DBStore) getMyChannelsForTeam(userID string, teamID string) ([]string,
 	return channels, nil
 }
 
-func (db *DBStore) getMyCoMembersForTeam(userID string, teamID string) ([]string, error) {
-	myChannels, err := db.getMyChannelsForTeam(userID, teamID)
-	if err != nil {
-		return nil, err
-	}
-
+func (db *DBStore) getMyCoMembersForTeam(myChannels []string, userID string, teamID string) ([]string, error) {
 	query := db.sq.Select("UserId").
 		From("ChannelMembers").
 		LeftJoin("Channels AS C ON ChannelMembers.ChannelId=C.Id").
@@ -217,7 +212,7 @@ func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]
 	if err != nil {
 		return nil, err
 	}
-	myCoMembers, err := db.getMyCoMembersForTeam(userID, teamID)
+	myCoMembers, err := db.getMyCoMembersForTeam(myChannels, userID, teamID)
 	if err != nil {
 		return nil, err
 	}

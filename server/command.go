@@ -78,7 +78,7 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 	message += channelsMessage("Suggested channels for the current team (based on the users the channels that you are member)", channels)
 
 	if message == "" {
-		message = "No recomendations found for you"
+		message = "No recommendations found for you"
 	}
 	p.sendResponse(args.UserId, args.ChannelId, message)
 	return &model.CommandResponse{}, nil
