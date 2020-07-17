@@ -47,6 +47,14 @@ const manifestStr = `
         "help_text": "When user joins to a channel, recommend bot is going to recommend other channels in the team based on the people in that channel.",
         "placeholder": "",
         "default": null
+      },
+      {
+        "key": "GracePeriod",
+        "display_name": "Grace period",
+        "type": "number",
+        "help_text": "Give a period of time since the user was created before start sending automatic messages on join.",
+        "placeholder": "",
+        "default": null
       }
     ]
   }

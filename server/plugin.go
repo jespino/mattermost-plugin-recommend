@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -60,6 +59,13 @@ func (p *Plugin) OnDeactivate() error {
 	return nil
 }
 
+func (p *Plugin) isInGracePeriod(user *model.User) bool {
+	if user.CreateAt+int64(p.getConfiguration().GracePeriod*1000) > model.GetMillis() {
+		return true
+	}
+	return false
+}
+
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	router := mux.NewRouter()
 	router.ServeHTTP(w, r)
@@ -67,6 +73,9 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 
 func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.ChannelMember, user *model.User) {
 	if !p.getConfiguration().RecommendOnJoinChannel {
+		return
+	}
+	if p.isInGracePeriod(user) {
 		return
 	}
 	time.Sleep(delayInSecons * time.Second)
@@ -92,17 +101,20 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	if len(suggestions) == 0 {
 		return
 	}
-	message := channelsMessage("Others who joined this channel also joined", team.Name, suggestions)
+	message := channelsMessage("Others who joined this channel also joined ", team.Name, suggestions, ". You may be interested joining them too!")
 	post := model.Post{
 		UserId:    p.botID,
 		ChannelId: channelMember.ChannelId,
-		Message:   fmt.Sprintf("%s. You may be interested joining them too!", message),
+		Message:   message,
 	}
 	p.API.SendEphemeralPost(channelMember.UserId, &post)
 }
 
 func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMember, user *model.User) {
 	if !p.getConfiguration().RecommendOnJoinTeam {
+		return
+	}
+	if p.isInGracePeriod(user) {
 		return
 	}
 	time.Sleep(delayInSecons * time.Second)
@@ -118,13 +130,13 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-	message += channelsMessage("Currently the most active channels in this team are:", team.Name, suggestions)
+	message += channelsMessage("Currently the most active channels in this team are: ", team.Name, suggestions, "")
 
 	suggestions, err = p.Store.MostPopulatedChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-	message += channelsMessage("The most popular channels in this team are:", team.Name, suggestions)
+	message += channelsMessage("The most popular channels in this team are: ", team.Name, suggestions, "")
 
 	if message == "" {
 		return

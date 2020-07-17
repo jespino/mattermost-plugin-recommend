@@ -20,6 +20,7 @@ import (
 type configuration struct {
 	RecommendOnJoinTeam    bool
 	RecommendOnJoinChannel bool
+	GracePeriod            int
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
