@@ -18,7 +18,7 @@ const manifestStr = `
   "homepage_url": "https://github.com/jespino/mattermost-plugin-recommend",
   "support_url": "https://github.com/jespino/mattermost-plugin-recommend/issues",
   "icon_path": "assets/icon.svg",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "min_server_version": "5.16.0",
   "server": {
     "executables": {
