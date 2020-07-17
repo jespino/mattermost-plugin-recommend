@@ -18,6 +18,11 @@ type DBStore struct {
 	sq   sq.StatementBuilderType
 }
 
+type channelData struct {
+	Name        string
+	DisplayName string
+}
+
 func NewDBStore(driverName, dataSource string) (*DBStore, error) {
 	db, err := sql.Open(driverName, dataSource)
 	if err != nil {
@@ -37,21 +42,21 @@ func (db *DBStore) Close() {
 	db.conn.Close()
 }
 
-func (db *DBStore) MostActiveChannels(userID, teamID string) ([]string, error) {
+func (db *DBStore) MostActiveChannels(userID, teamID string) ([]channelData, error) {
 	myChannels, err := db.getMyChannelsForTeam(userID, teamID)
 	if err != nil {
 		return nil, err
 	}
 
 	lastWeek := model.GetMillis() - (ActivePeriodInMinutes * 60 * 1000)
-	query := db.sq.Select("C.Name").
+	query := db.sq.Select("C.Name as Name, C.DisplayName as DisplayName").
 		From("Posts AS P").
 		LeftJoin("Channels AS C ON P.ChannelId = C.Id").
 		Where(sq.Gt{"P.CreateAt": lastWeek}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
 		Where(sq.NotEq{"C.Id": myChannels}).
-		GroupBy("C.Name").
+		GroupBy("C.Name, C.DisplayName").
 		OrderBy("Count(P.Id) DESC").
 		Limit(3)
 	rows, err := query.Query()
@@ -59,10 +64,10 @@ func (db *DBStore) MostActiveChannels(userID, teamID string) ([]string, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	channels := []string{}
+	channels := []channelData{}
 	for rows.Next() {
-		var channel string
-		if err := rows.Scan(&channel); err != nil {
+		var channel channelData
+		if err := rows.Scan(&channel.Name, &channel.DisplayName); err != nil {
 			return nil, err
 		}
 		channels = append(channels, channel)
@@ -70,20 +75,20 @@ func (db *DBStore) MostActiveChannels(userID, teamID string) ([]string, error) {
 	return channels, nil
 }
 
-func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]string, error) {
+func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]channelData, error) {
 	myChannels, err := db.getMyChannelsForTeam(userID, teamID)
 	if err != nil {
 		return nil, err
 	}
 
-	query := db.sq.Select("C.Name").
+	query := db.sq.Select("C.Name as Name, C.DisplayName as DisplayName").
 		From("ChannelMembers AS CM").
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"C.TeamId": teamID}).
 		Where(sq.NotEq{"CM.UserId": userID}).
 		Where(sq.NotEq{"C.Id": myChannels}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
-		GroupBy("C.Name").
+		GroupBy("C.Name, C.DisplayName").
 		OrderBy("Count(CM.UserId) DESC").
 		Limit(3)
 
@@ -92,10 +97,10 @@ func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]string, error
 		return nil, err
 	}
 	defer rows.Close()
-	channels := []string{}
+	channels := []channelData{}
 	for rows.Next() {
-		var channel string
-		if err := rows.Scan(&channel); err != nil {
+		var channel channelData
+		if err := rows.Scan(&channel.Name, &channel.DisplayName); err != nil {
 			return nil, err
 		}
 		channels = append(channels, channel)
@@ -124,7 +129,7 @@ func (db *DBStore) getChannelMembers(channelID string) ([]string, error) {
 	return users, nil
 }
 
-func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string) ([]string, error) {
+func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string) ([]channelData, error) {
 	otherMembersInChannel, err := db.getChannelMembers(channelID)
 	if err != nil {
 		return nil, err
@@ -135,14 +140,14 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 		return nil, err
 	}
 
-	query := db.sq.Select("C.Name").
+	query := db.sq.Select("C.Name as Name, C.DisplayName as DisplayName").
 		From("ChannelMembers AS CM").
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"CM.UserId": otherMembersInChannel}).
 		Where(sq.NotEq{"C.Id": myChannels}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
-		GroupBy("C.Name").
+		GroupBy("C.Name, C.DisplayName").
 		OrderBy("Count(CM.UserId) DESC").
 		Limit(3)
 	rows, err := query.Query()
@@ -150,10 +155,10 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 		return nil, err
 	}
 	defer rows.Close()
-	channels := []string{}
+	channels := []channelData{}
 	for rows.Next() {
-		var channel string
-		if err := rows.Scan(&channel); err != nil {
+		var channel channelData
+		if err := rows.Scan(&channel.Name, &channel.DisplayName); err != nil {
 			return nil, err
 		}
 		channels = append(channels, channel)
@@ -207,7 +212,7 @@ func (db *DBStore) getMyCoMembersForTeam(myChannels []string, userID string, tea
 	return users, nil
 }
 
-func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]string, error) {
+func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]channelData, error) {
 	myChannels, err := db.getMyChannelsForTeam(userID, teamID)
 	if err != nil {
 		return nil, err
@@ -217,14 +222,14 @@ func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]
 		return nil, err
 	}
 
-	query := db.sq.Select("C.Name").
+	query := db.sq.Select("C.Name as Name, C.DisplayName as DisplayName").
 		From("ChannelMembers AS CM").
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
 		Where(sq.Eq{"CM.UserId": myCoMembers}).
 		Where(sq.NotEq{"CM.ChannelId": myChannels}).
-		GroupBy("C.Name").
+		GroupBy("C.Name, C.DisplayName").
 		OrderBy("Count(CM.UserId) DESC").
 		Limit(3)
 
@@ -233,10 +238,10 @@ func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]
 		return nil, err
 	}
 	defer rows.Close()
-	channels := []string{}
+	channels := []channelData{}
 	for rows.Next() {
-		var channel string
-		if err := rows.Scan(&channel); err != nil {
+		var channel channelData
+		if err := rows.Scan(&channel.Name, &channel.DisplayName); err != nil {
 			return nil, err
 		}
 		channels = append(channels, channel)

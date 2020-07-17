@@ -76,6 +76,11 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 		p.API.LogError(appErr.Error())
 	}
 
+	team, appErr := p.API.GetTeam(channel.TeamId)
+	if appErr != nil {
+		p.API.LogError(appErr.Error())
+	}
+
 	if channel.Name == "town-square" || channel.Name == "off-topic" {
 		return
 	}
@@ -87,7 +92,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	if len(suggestions) == 0 {
 		return
 	}
-	message := channelsMessage("Other people who joined this channel also joined this other channels", suggestions)
+	message := channelsMessage("Other people who joined this channel also joined this other channels", team.Name, suggestions)
 	post := model.Post{
 		UserId:    p.botID,
 		ChannelId: channelMember.ChannelId,
@@ -104,17 +109,22 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 
 	message := ""
 
+	team, appErr := p.API.GetTeam(teamMember.TeamId)
+	if appErr != nil {
+		p.API.LogError(appErr.Error())
+	}
+
 	suggestions, err := p.Store.MostActiveChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-	message += channelsMessage("The most active channels in this team lately are", suggestions)
+	message += channelsMessage("The most active channels in this team lately are", team.Name, suggestions)
 
 	suggestions, err = p.Store.MostPopulatedChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-	message += channelsMessage("The most popular channels in this team are", suggestions)
+	message += channelsMessage("The most popular channels in this team are", team.Name, suggestions)
 
 	if message == "" {
 		return
