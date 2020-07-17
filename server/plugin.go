@@ -92,11 +92,11 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	if len(suggestions) == 0 {
 		return
 	}
-	message := channelsMessage("Other people who joined this channel also joined this other channels", team.Name, suggestions)
+	message := channelsMessage("Others who joined this channel also joined", team.Name, suggestions)
 	post := model.Post{
 		UserId:    p.botID,
 		ChannelId: channelMember.ChannelId,
-		Message:   fmt.Sprintf("%s\nmaybe you are interested in joining them too", message),
+		Message:   fmt.Sprintf("%s. You may be interested joining them too!", message),
 	}
 	p.API.SendEphemeralPost(channelMember.UserId, &post)
 }
@@ -118,13 +118,13 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-	message += channelsMessage("The most active channels in this team lately are", team.Name, suggestions)
+	message += channelsMessage("Currently the most active channels in this team are:", team.Name, suggestions)
 
 	suggestions, err = p.Store.MostPopulatedChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-	message += channelsMessage("The most popular channels in this team are", team.Name, suggestions)
+	message += channelsMessage("The most popular channels in this team are:", team.Name, suggestions)
 
 	if message == "" {
 		return

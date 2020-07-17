@@ -60,31 +60,31 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 		p.sendResponse(args.UserId, args.ChannelId, err.Error())
 		return &model.CommandResponse{}, nil
 	}
-	message += channelsMessage("Most active channels for the current team", team.Name, channels)
+	message += channelsMessage("Most active channels for the current team:", team.Name, channels)
 
 	channels, err = p.Store.MostPopulatedChannels(args.UserId, args.TeamId)
 	if err != nil {
 		p.sendResponse(args.UserId, args.ChannelId, err.Error())
 		return &model.CommandResponse{}, nil
 	}
-	message += channelsMessage("Most populated channels for the current team", team.Name, channels)
+	message += channelsMessage("Most populated channels for the current team:", team.Name, channels)
 
 	channels, err = p.Store.MostPopularChannelsByChannel(args.UserId, args.ChannelId, args.TeamId)
 	if err != nil {
 		p.sendResponse(args.UserId, args.ChannelId, err.Error())
 		return &model.CommandResponse{}, nil
 	}
-	message += channelsMessage("Suggested channels for the current team (based on the users of the current channel)", team.Name, channels)
+	message += channelsMessage("Suggested channels for the current team (based on the users of the current channel):", team.Name, channels)
 
 	channels, err = p.Store.MostPopularChannelsByUserCoMembers(args.UserId, args.TeamId)
 	if err != nil {
 		p.sendResponse(args.UserId, args.ChannelId, err.Error())
 		return &model.CommandResponse{}, nil
 	}
-	message += channelsMessage("Suggested channels for the current team (based on the users the channels that you are member)", team.Name, channels)
+	message += channelsMessage("Suggested channels for the current team (based on the users of the channels you are member of):", team.Name, channels)
 
 	if message == "" {
-		message = "No recommendations found for you"
+		message = "No recommendations found for you."
 	}
 	p.sendResponse(args.UserId, args.ChannelId, message)
 	return &model.CommandResponse{}, nil
