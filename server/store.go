@@ -55,6 +55,7 @@ func (db *DBStore) MostActiveChannels(userID, teamID string) ([]channelData, err
 		Where(sq.Gt{"P.CreateAt": lastWeek}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
+		Where(sq.Eq{"C.DeleteAt": 0}).
 		Where(sq.NotEq{"C.Id": myChannels}).
 		GroupBy("C.Name, C.DisplayName").
 		OrderBy("Count(P.Id) DESC").
@@ -87,6 +88,7 @@ func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]channelData, 
 		Where(sq.Eq{"C.TeamId": teamID}).
 		Where(sq.NotEq{"CM.UserId": userID}).
 		Where(sq.NotEq{"C.Id": myChannels}).
+		Where(sq.Eq{"C.DeleteAt": 0}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		GroupBy("C.Name, C.DisplayName").
 		OrderBy("Count(CM.UserId) DESC").
@@ -147,6 +149,7 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 		Where(sq.NotEq{"C.Id": myChannels}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
+		Where(sq.Eq{"C.DeleteAt": 0}).
 		GroupBy("C.Name, C.DisplayName").
 		OrderBy("Count(CM.UserId) DESC").
 		Limit(3)
@@ -227,6 +230,7 @@ func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
+		Where(sq.Eq{"C.DeleteAt": 0}).
 		Where(sq.Eq{"CM.UserId": myCoMembers}).
 		Where(sq.NotEq{"CM.ChannelId": myChannels}).
 		GroupBy("C.Name, C.DisplayName").
