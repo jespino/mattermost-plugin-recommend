@@ -102,6 +102,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 		return
 	}
 	message := channelsMessage("Others who joined this channel also joined ", team.Name, suggestions, ". You may be interested joining them too!")
+	message = message + "\n\nGet more recommendations using /recommend command."
 	post := model.Post{
 		UserId:    p.botID,
 		ChannelId: channelMember.ChannelId,
@@ -147,6 +148,8 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		p.API.LogError(appErr.Error())
 		return
 	}
+	message = message + "\n\nGet more recommendations using /recommend command."
+
 	post := model.Post{
 		UserId:    p.botID,
 		ChannelId: defaultChannel.Id,
