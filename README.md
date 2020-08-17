@@ -2,6 +2,8 @@
 
 This plugin recommends you channels based on your memberships and the most popular channels in a team.
 
+![image](https://user-images.githubusercontent.com/290303/90430523-e26b0680-e0c7-11ea-8b25-5f7510223cff.png)
+
 ## Quick start
 
 __Requires Mattermost 5.16 or higher.__
