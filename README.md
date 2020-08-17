@@ -1,4 +1,8 @@
-# Mattermost Recommend [![Build Status](https://travis-ci.org/jespino/mattermost-plugin-recommend.svg?branch=master)](https://travis-ci.org/jespino/mattermost-plugin-recommend)
+# Mattermost Recommend
+
+[![Build Status](https://img.shields.io/circleci/project/github/jespino/mattermost-plugin-recommend/master)](https://circleci.com/gh/jespino/mattermost-plugin-recommend)
+[![Release](https://img.shields.io/github/v/release/jespino/mattermost-plugin-recommend)](https://github.com/jespino/mattermost-plugin-recommend/releases/latest)
+[![HW](https://img.shields.io/github/issues/jespino/mattermost-plugin-recommend/Up%20For%20Grabs?color=dark%20green&label=Help%20Wanted)](https://github.com/jespino/mattermost-plugin-recommend/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22Up+For+Grabs%22+label%3A%22Help+Wanted%22)
 
 This plugin recommends you channels based on your memberships and the most popular channels in a team.
 
