@@ -4,13 +4,32 @@ This plugin recommends you channels based on your memberships and the most popul
 
 ![image](https://user-images.githubusercontent.com/290303/90430523-e26b0680-e0c7-11ea-8b25-5f7510223cff.png)
 
-## Quick start
-
 __Requires Mattermost 5.16 or higher.__
 
-1. Install the plugin
-    1. Download the latest version of the plugin from the GitHub releases page
-    2. In Mattermost, go the System Console -> Plugins -> Management
-    3. Upload the plugin
-2. Enable de plugin.
-3. Start using it running the `/recommend` slash command.
+## Features
+
+- Use a `/recommend` command to get recommendations based in the current channel and the current team.
+- Enable automatic recommendations when a user joins a channel or a team.
+- Give a grace period to new members before they start to get automatic recommendations.
+
+## Installation
+
+1. Go to https://github.com/jespino/mattermost-plugin-recommend/releases to download the latest release file in tar.gz format.
+2. Upload the file through **System Console > Plugins > Management**, or manually upload it to the Mattermost server under plugin directory. See [documentation](https://docs.mattermost.com/administration/plugins.html#set-up-guide) for more details.
+
+## Configuration
+
+Go to **System Console > Plugins > Recommend** and set the following values:
+
+1. **Enable Plugin**: ``true``
+2. **Recommend at team join**: When user joins to a team, recommend bot is going to recommend interesting channels in that team.
+3. **Recommend at channel join**: When user joins to a channel, recommend bot is going to recommend other channels in the team based on the people in that channel.
+4. **Grace Period**: Give a period of time since the user was created before start sending automatic messages on join.
+
+You're all set! To test it, go to any Mattermost channel and execute the `/recommend` command.
+
+### Manual Builds
+
+To build the project you can use the existing `Makefile` in the repo. Use `make dist` to compile and compress the plugin into a .tar.gz that you can install in your Mattermost instance.
+
+Inside the `/server` directory, you will find the Go files of the plugin.
