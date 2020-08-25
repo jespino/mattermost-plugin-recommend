@@ -1,11 +1,9 @@
 package main
 
 import (
-	"net/http"
 	"sync"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/plugin"
 	"github.com/pkg/errors"
@@ -38,7 +36,7 @@ func (p *Plugin) OnActivate() error {
 	recommendBot := &model.Bot{
 		Username:    "recommend-bot",
 		DisplayName: "Recommend Bot",
-		Description: "A bot account created by the com.github.jespino.recommend plugin",
+		Description: "A bot account created by the Recommend plugin",
 	}
 
 	options := []plugin.EnsureBotOption{
@@ -64,11 +62,6 @@ func (p *Plugin) isInGracePeriod(user *model.User) bool {
 	return user.CreateAt+int64(p.getConfiguration().GracePeriod*1000) > model.GetMillis()
 }
 
-func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
-	router := mux.NewRouter()
-	router.ServeHTTP(w, r)
-}
-
 func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.ChannelMember, user *model.User) {
 	if !p.getConfiguration().RecommendOnJoinChannel {
 		return
@@ -81,11 +74,13 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	channel, appErr := p.API.GetChannel(channelMember.ChannelId)
 	if appErr != nil {
 		p.API.LogError(appErr.Error())
+		return
 	}
 
 	team, appErr := p.API.GetTeam(channel.TeamId)
 	if appErr != nil {
 		p.API.LogError(appErr.Error())
+		return
 	}
 
 	if channel.Name == "town-square" || channel.Name == "off-topic" {
@@ -95,6 +90,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	suggestions, err := p.Store.MostPopularChannelsByChannel(channelMember.UserId, channelMember.ChannelId, channel.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
+		return
 	}
 	if len(suggestions) == 0 {
 		return
@@ -123,6 +119,7 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	team, appErr := p.API.GetTeam(teamMember.TeamId)
 	if appErr != nil {
 		p.API.LogError(appErr.Error())
+		return
 	}
 
 	suggestions, err := p.Store.MostActiveChannels(teamMember.UserId, teamMember.TeamId)
