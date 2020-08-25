@@ -18,7 +18,7 @@ type DBStore struct {
 	sq   sq.StatementBuilderType
 }
 
-type channelData struct {
+type ChannelData struct {
 	Name        string
 	DisplayName string
 }
@@ -42,7 +42,7 @@ func (db *DBStore) Close() {
 	db.conn.Close()
 }
 
-func (db *DBStore) MostActiveChannels(userID, teamID string) ([]channelData, error) {
+func (db *DBStore) MostActiveChannels(userID, teamID string) ([]ChannelData, error) {
 	myChannels, err := db.getMyChannelsForTeam(userID, teamID)
 	if err != nil {
 		return nil, err
@@ -65,9 +65,9 @@ func (db *DBStore) MostActiveChannels(userID, teamID string) ([]channelData, err
 		return nil, err
 	}
 	defer rows.Close()
-	channels := []channelData{}
+	channels := []ChannelData{}
 	for rows.Next() {
-		var channel channelData
+		var channel ChannelData
 		if err := rows.Scan(&channel.Name, &channel.DisplayName); err != nil {
 			return nil, err
 		}
@@ -76,7 +76,7 @@ func (db *DBStore) MostActiveChannels(userID, teamID string) ([]channelData, err
 	return channels, nil
 }
 
-func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]channelData, error) {
+func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]ChannelData, error) {
 	myChannels, err := db.getMyChannelsForTeam(userID, teamID)
 	if err != nil {
 		return nil, err
@@ -99,9 +99,9 @@ func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]channelData, 
 		return nil, err
 	}
 	defer rows.Close()
-	channels := []channelData{}
+	channels := []ChannelData{}
 	for rows.Next() {
-		var channel channelData
+		var channel ChannelData
 		if err := rows.Scan(&channel.Name, &channel.DisplayName); err != nil {
 			return nil, err
 		}
@@ -131,7 +131,7 @@ func (db *DBStore) getChannelMembers(channelID string) ([]string, error) {
 	return users, nil
 }
 
-func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string) ([]channelData, error) {
+func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string) ([]ChannelData, error) {
 	otherMembersInChannel, err := db.getChannelMembers(channelID)
 	if err != nil {
 		return nil, err
@@ -158,9 +158,9 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 		return nil, err
 	}
 	defer rows.Close()
-	channels := []channelData{}
+	channels := []ChannelData{}
 	for rows.Next() {
-		var channel channelData
+		var channel ChannelData
 		if err := rows.Scan(&channel.Name, &channel.DisplayName); err != nil {
 			return nil, err
 		}
@@ -215,7 +215,7 @@ func (db *DBStore) getMyCoMembersForTeam(myChannels []string, userID string, tea
 	return users, nil
 }
 
-func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]channelData, error) {
+func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]ChannelData, error) {
 	myChannels, err := db.getMyChannelsForTeam(userID, teamID)
 	if err != nil {
 		return nil, err
@@ -242,9 +242,9 @@ func (db *DBStore) MostPopularChannelsByUserCoMembers(userID, teamID string) ([]
 		return nil, err
 	}
 	defer rows.Close()
-	channels := []channelData{}
+	channels := []ChannelData{}
 	for rows.Next() {
-		var channel channelData
+		var channel ChannelData
 		if err := rows.Scan(&channel.Name, &channel.DisplayName); err != nil {
 			return nil, err
 		}

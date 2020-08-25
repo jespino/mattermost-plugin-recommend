@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	delayInSecons = 6
+	delayInSecons           = 6
+	moreRecommendationsText = "\n\nGet more recommendations using /recommend command."
 )
 
 type Plugin struct {
@@ -60,10 +61,7 @@ func (p *Plugin) OnDeactivate() error {
 }
 
 func (p *Plugin) isInGracePeriod(user *model.User) bool {
-	if user.CreateAt+int64(p.getConfiguration().GracePeriod*1000) > model.GetMillis() {
-		return true
-	}
-	return false
+	return user.CreateAt+int64(p.getConfiguration().GracePeriod*1000) > model.GetMillis()
 }
 
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
@@ -102,7 +100,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 		return
 	}
 	message := channelsMessage("Others who joined this channel also joined ", team.Name, suggestions, ". You may be interested joining them too!")
-	message = message + "\n\nGet more recommendations using /recommend command."
+	message += moreRecommendationsText
 	post := model.Post{
 		UserId:    p.botID,
 		ChannelId: channelMember.ChannelId,
@@ -148,7 +146,7 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		p.API.LogError(appErr.Error())
 		return
 	}
-	message = message + "\n\nGet more recommendations using /recommend command."
+	message += moreRecommendationsText
 
 	post := model.Post{
 		UserId:    p.botID,

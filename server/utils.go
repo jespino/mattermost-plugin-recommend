@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func channelsMessage(text string, teamName string, channels []channelData, extraText string) string {
+func channelsMessage(text string, teamName string, channels []ChannelData, extraText string) string {
 	if len(channels) == 0 {
 		return ""
 	}
