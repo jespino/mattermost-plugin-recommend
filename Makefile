@@ -81,6 +81,10 @@ ifneq ($(HAS_WEBAPP),)
 	touch $@
 endif
 
+ifeq ($(HAS_WEBAPP),)
+webapp/package.json:
+endif
+
 ## Builds the webapp, if it exists.
 .PHONY: webapp
 webapp: webapp/node_modules
