@@ -131,7 +131,7 @@ endif
 ## Builds and installs the plugin to a server.
 .PHONY: deploy
 deploy: dist
-	./build/bin/pluginctl deploy $(PLUGIN_ID) dist/$(BUNDLE_NAME)
+	./build/bin/deploy $(PLUGIN_ID) dist/$(BUNDLE_NAME)
 
 ## Builds and installs the plugin to a server, updating the webapp automatically when changed.
 .PHONY: watch
@@ -145,7 +145,7 @@ endif
 ## Installs a previous built plugin with updated webpack assets to a server.
 .PHONY: deploy-from-watch
 deploy-from-watch: bundle
-	./build/bin/pluginctl deploy $(PLUGIN_ID) dist/$(BUNDLE_NAME)
+	./build/bin/deploy $(PLUGIN_ID) dist/$(BUNDLE_NAME)
 
 ## Setup dlv for attaching, identifying the plugin PID for other targets.
 .PHONY: setup-attach
