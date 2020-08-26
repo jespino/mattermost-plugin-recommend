@@ -1,6 +1,6 @@
 {
     "id": "com.github.jespino.recommend",
-    "name": "Recommend",
+    "name": "Channel Recommender",
     "description": "This plugin recommends you channels",
     "homepage_url": "https://github.com/jespino/mattermost-plugin-recommend",
     "support_url": "https://github.com/jespino/mattermost-plugin-recommend/issues",

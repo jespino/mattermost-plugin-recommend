@@ -34,9 +34,9 @@ func (p *Plugin) OnActivate() error {
 	}
 
 	recommendBot := &model.Bot{
-		Username:    "recommend-bot",
-		DisplayName: "Recommend Bot",
-		Description: "A bot account created by the Recommend plugin",
+		Username:    "channel-recommender",
+		DisplayName: "Channel Recommender Bot",
+		Description: "A bot account created by the Channel Recommender plugin",
 	}
 
 	options := []plugin.EnsureBotOption{
