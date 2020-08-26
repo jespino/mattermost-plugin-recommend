@@ -38,6 +38,11 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 		action = split[1]
 	}
 
+	if !p.canReceiveRecommendations(args.UserId, args.TeamId) {
+		p.sendResponse(args.UserId, args.ChannelId, "You don't have permissions to get channels recommendations.")
+		return &model.CommandResponse{}, nil
+	}
+
 	if command != "/recommend" {
 		return &model.CommandResponse{}, nil
 	}

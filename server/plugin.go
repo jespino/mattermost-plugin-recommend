@@ -76,6 +76,9 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 		p.API.LogError(appErr.Error())
 		return
 	}
+	if !p.canReceiveRecommendations(user.Id, channel.TeamId) {
+		return
+	}
 
 	team, appErr := p.API.GetTeam(channel.TeamId)
 	if appErr != nil {
@@ -112,6 +115,10 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	if p.isInGracePeriod(user) {
 		return
 	}
+	if !p.canReceiveRecommendations(user.Id, teamMember.TeamId) {
+		return
+	}
+
 	time.Sleep(delayInSecons * time.Second)
 
 	message := ""
@@ -151,4 +158,10 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		Message:   message,
 	}
 	p.API.SendEphemeralPost(teamMember.UserId, &post)
+}
+
+func (p *Plugin) canReceiveRecommendations(userId string, teamId string) bool {
+	canListChannels := p.API.HasPermissionToTeam(userId, teamId, model.PERMISSION_LIST_TEAM_CHANNELS)
+	canJoinPublicChannels := p.API.HasPermissionToTeam(userId, teamId, model.PERMISSION_JOIN_PUBLIC_CHANNELS)
+	return canListChannels && canJoinPublicChannels
 }
