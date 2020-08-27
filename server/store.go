@@ -56,7 +56,7 @@ func (db *DBStore) MostActiveChannels(userID, teamID string) ([]ChannelData, err
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
 		Where(sq.Eq{"C.DeleteAt": 0}).
-		Where(sq.NotEq{"C.Id": myChannels}).
+		Where(sq.NotEq{"P.ChannelId": myChannels}).
 		GroupBy("C.Name, C.DisplayName").
 		OrderBy("Count(P.Id) DESC").
 		Limit(3)
@@ -87,7 +87,7 @@ func (db *DBStore) MostPopulatedChannels(userID, teamID string) ([]ChannelData, 
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"C.TeamId": teamID}).
 		Where(sq.NotEq{"CM.UserId": userID}).
-		Where(sq.NotEq{"C.Id": myChannels}).
+		Where(sq.NotEq{"CM.ChannelId": myChannels}).
 		Where(sq.Eq{"C.DeleteAt": 0}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		GroupBy("C.Name, C.DisplayName").
@@ -146,7 +146,7 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 		From("ChannelMembers AS CM").
 		LeftJoin("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"CM.UserId": otherMembersInChannel}).
-		Where(sq.NotEq{"C.Id": myChannels}).
+		Where(sq.NotEq{"CM.Id": myChannels}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
 		Where(sq.Eq{"C.DeleteAt": 0}).
@@ -195,9 +195,10 @@ func (db *DBStore) getMyCoMembersForTeam(myChannels []string, userID string, tea
 	query := db.sq.Select("UserId").
 		From("ChannelMembers").
 		LeftJoin("Channels AS C ON ChannelMembers.ChannelId=C.Id").
-		Where(sq.Eq{"ChannelId": myChannels}).
-		Where(sq.NotEq{"Name": "town-square"}).
-		Where(sq.NotEq{"UserId": userID})
+		Where(sq.Eq{"CM.ChannelId": myChannels}).
+		Where(sq.NotEq{"C.Name": model.DEFAULT_CHANNEL}).
+		Where(sq.NotEq{"CM.UserId": userID}).
+		Distinct()
 
 	rows, err := query.Query()
 	if err != nil {
