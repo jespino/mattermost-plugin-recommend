@@ -13,7 +13,7 @@ var manifest *model.Manifest
 const manifestStr = `
 {
   "id": "com.github.jespino.recommend",
-  "name": "Recommend",
+  "name": "Channel Recommender",
   "description": "This plugin recommends you channels",
   "homepage_url": "https://github.com/jespino/mattermost-plugin-recommend",
   "support_url": "https://github.com/jespino/mattermost-plugin-recommend/issues",
@@ -46,6 +46,14 @@ const manifestStr = `
         "display_name": "Recommend at channel join",
         "type": "bool",
         "help_text": "When user joins to a channel, recommend bot is going to recommend other channels in the team based on the people in that channel.",
+        "placeholder": "",
+        "default": null
+      },
+      {
+        "key": "ActivityThreshold",
+        "display_name": "Activity threashold",
+        "type": "int",
+        "help_text": "When the bot recommends you the most active channels, what is the time (in minutes) that is used to count activity. By default is a week. In instances with a lot of activity we recommend to adjust this to smaller value.",
         "placeholder": "",
         "default": null
       },

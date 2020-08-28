@@ -60,7 +60,12 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 		return &model.CommandResponse{}, nil
 	}
 
-	channels, err := p.Store.MostActiveChannels(args.UserId, args.TeamId)
+	activityThreshold := p.getConfiguration().ActivityThreshold
+	if activityThreshold == 0 {
+		activityThreshold = 7 * 24 * 60 // A week
+	}
+
+	channels, err := p.Store.MostActiveChannels(args.UserId, args.TeamId, activityThreshold)
 	if err != nil {
 		p.sendResponse(args.UserId, args.ChannelId, err.Error())
 		return &model.CommandResponse{}, nil

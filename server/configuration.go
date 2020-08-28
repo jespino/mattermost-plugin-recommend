@@ -20,6 +20,7 @@ import (
 type configuration struct {
 	RecommendOnJoinTeam    bool
 	RecommendOnJoinChannel bool
+	ActivityThreshold      int
 	GracePeriod            int
 }
 

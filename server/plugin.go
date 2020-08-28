@@ -129,7 +129,12 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		return
 	}
 
-	suggestions, err := p.Store.MostActiveChannels(teamMember.UserId, teamMember.TeamId)
+	activityThreshold := p.getConfiguration().ActivityThreshold
+	if activityThreshold == 0 {
+		activityThreshold = 7 * 24 * 60 // A week
+	}
+
+	suggestions, err := p.Store.MostActiveChannels(teamMember.UserId, teamMember.TeamId, activityThreshold)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}

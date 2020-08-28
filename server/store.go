@@ -9,10 +9,6 @@ import (
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
-const (
-	ActivePeriodInMinutes = 7 * 24 * 60 // A week
-)
-
 type DBStore struct {
 	conn *sql.DB
 	sq   sq.StatementBuilderType
@@ -42,13 +38,13 @@ func (db *DBStore) Close() {
 	db.conn.Close()
 }
 
-func (db *DBStore) MostActiveChannels(userID, teamID string) ([]ChannelData, error) {
+func (db *DBStore) MostActiveChannels(userID, teamID string, activityThreshold int) ([]ChannelData, error) {
 	myChannels, err := db.getMyChannelsForTeam(userID, teamID)
 	if err != nil {
 		return nil, err
 	}
 
-	lastWeek := model.GetMillis() - (ActivePeriodInMinutes * 60 * 1000)
+	lastWeek := model.GetMillis() - (int64(activityThreshold) * 60 * 1000)
 	query := db.sq.Select("C.Name as Name, C.DisplayName as DisplayName").
 		From("Posts AS P").
 		Join("Channels AS C ON P.ChannelId = C.Id").
