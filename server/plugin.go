@@ -62,10 +62,17 @@ func (p *Plugin) isInGracePeriod(user *model.User) bool {
 	return user.CreateAt+int64(p.getConfiguration().GracePeriod*1000) > model.GetMillis()
 }
 
-func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.ChannelMember, user *model.User) {
+func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.ChannelMember, actor *model.User) {
 	if !p.getConfiguration().RecommendOnJoinChannel {
 		return
 	}
+
+	user, appErr := p.API.GetUser(channelMember.UserId)
+	if appErr != nil {
+		p.API.LogError(appErr.Error())
+		return
+	}
+
 	if p.isInGracePeriod(user) {
 		return
 	}
@@ -112,6 +119,13 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	if !p.getConfiguration().RecommendOnJoinTeam {
 		return
 	}
+
+	user, appErr := p.API.GetUser(teamMember.UserId)
+	if appErr != nil {
+		p.API.LogError(appErr.Error())
+		return
+	}
+
 	if p.isInGracePeriod(user) {
 		return
 	}

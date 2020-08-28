@@ -142,7 +142,7 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 		From("ChannelMembers AS CM").
 		Join("Channels AS C ON CM.ChannelId = C.Id").
 		Where(sq.Eq{"CM.UserId": otherMembersInChannel}).
-		Where(sq.NotEq{"CM.Id": myChannels}).
+		Where(sq.NotEq{"CM.ChannelId": myChannels}).
 		Where(sq.Eq{"C.Type": model.CHANNEL_OPEN}).
 		Where(sq.Eq{"C.TeamId": teamID}).
 		Where(sq.Eq{"C.DeleteAt": 0}).
@@ -167,8 +167,8 @@ func (db *DBStore) MostPopularChannelsByChannel(userID, channelID, teamID string
 
 func (db *DBStore) getMyChannelsForTeam(userID string, teamID string) ([]string, error) {
 	query := db.sq.Select("ChannelId").
-		From("ChannelMembers").
-		Join("Channels ON Channels.Id=ChannelMembers.ChannelId").
+		From("ChannelMembers AS CM").
+		Join("Channels ON Channels.Id=CM.ChannelId").
 		Where(sq.Eq{"UserId": userID}).
 		Where(sq.Eq{"TeamId": teamID})
 	rows, err := query.Query()
@@ -189,8 +189,8 @@ func (db *DBStore) getMyChannelsForTeam(userID string, teamID string) ([]string,
 
 func (db *DBStore) getMyCoMembersForTeam(myChannels []string, userID string, teamID string) ([]string, error) {
 	query := db.sq.Select("UserId").
-		From("ChannelMembers").
-		Join("Channels AS C ON ChannelMembers.ChannelId=C.Id").
+		From("ChannelMembers AS CM").
+		Join("Channels AS C ON CM.ChannelId=C.Id").
 		Where(sq.Eq{"CM.ChannelId": myChannels}).
 		Where(sq.NotEq{"C.Name": model.DEFAULT_CHANNEL}).
 		Where(sq.NotEq{"CM.UserId": userID}).
