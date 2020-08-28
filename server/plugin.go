@@ -11,7 +11,7 @@ import (
 
 const (
 	delayInSecons           = 6
-	moreRecommendationsText = "\n\nGet more recommendations using /recommend command."
+	moreRecommendationsText = "\n\nGet more recommendations using `/recommend` command."
 )
 
 type Plugin struct {
