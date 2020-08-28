@@ -106,11 +106,16 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 		return
 	}
 	message := channelsMessage("Others who joined this channel also joined ", team.Name, suggestions, ". You may be interested joining them too!")
+	channelsMentions := channelsMentionsMetadata(team.Name, suggestions)
 	message += moreRecommendationsText
 	post := model.Post{
 		UserId:    p.botID,
 		ChannelId: channelMember.ChannelId,
 		Message:   message,
+		Props: map[string]interface{}{
+			"channel_mentions":        channelsMentions,
+			"disable_group_highlight": true,
+		},
 	}
 	p.API.SendEphemeralPost(channelMember.UserId, &post)
 }
@@ -153,12 +158,18 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		p.API.LogError(err.Error())
 	}
 	message += channelsMessage("Currently the most active channels in this team are: ", team.Name, suggestions, "")
+	channelsMentions := channelsMentionsMetadata(team.Name, suggestions)
+	allChannelsMentions := channelsMentions
 
 	suggestions, err = p.Store.MostPopulatedChannels(teamMember.UserId, teamMember.TeamId)
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
 	message += channelsMessage("The most popular channels in this team are: ", team.Name, suggestions, "")
+	channelsMentions = channelsMentionsMetadata(team.Name, suggestions)
+	for k, v := range channelsMentions {
+		allChannelsMentions[k] = v
+	}
 
 	if message == "" {
 		return
@@ -175,6 +186,10 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		UserId:    p.botID,
 		ChannelId: defaultChannel.Id,
 		Message:   message,
+		Props: map[string]interface{}{
+			"channel_mentions":        allChannelsMentions,
+			"disable_group_highlight": true,
+		},
 	}
 	p.API.SendEphemeralPost(teamMember.UserId, &post)
 }
