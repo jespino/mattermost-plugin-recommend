@@ -24,7 +24,13 @@ type Plugin struct {
 
 func (p *Plugin) OnActivate() error {
 	config := p.API.GetUnsanitizedConfig()
-	store, err := NewDBStore(*config.SqlSettings.DriverName, *config.SqlSettings.DataSource)
+	var err error
+	var store *DBStore
+	if len(config.SqlSettings.DataSourceReplicas) > 0 {
+		store, err = NewDBStore(*config.SqlSettings.DriverName, config.SqlSettings.DataSourceReplicas[0])
+	} else {
+		store, err = NewDBStore(*config.SqlSettings.DriverName, *config.SqlSettings.DataSource)
+	}
 	if err != nil {
 		return err
 	}
