@@ -165,8 +165,8 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	p.API.SendEphemeralPost(teamMember.UserId, &post)
 }
 
-func (p *Plugin) canReceiveRecommendations(userId string, teamId string) bool {
-	canListChannels := p.API.HasPermissionToTeam(userId, teamId, model.PERMISSION_LIST_TEAM_CHANNELS)
-	canJoinPublicChannels := p.API.HasPermissionToTeam(userId, teamId, model.PERMISSION_JOIN_PUBLIC_CHANNELS)
+func (p *Plugin) canReceiveRecommendations(userID string, teamID string) bool {
+	canListChannels := p.API.HasPermissionToTeam(userID, teamID, model.PERMISSION_LIST_TEAM_CHANNELS)
+	canJoinPublicChannels := p.API.HasPermissionToTeam(userID, teamID, model.PERMISSION_JOIN_PUBLIC_CHANNELS)
 	return canListChannels && canJoinPublicChannels
 }
