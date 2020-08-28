@@ -14,7 +14,7 @@ const manifestStr = `
 {
   "id": "com.github.jespino.recommend",
   "name": "Channel Recommender",
-  "description": "This plugin recommends you channels",
+  "description": "This plugin recommends other channels that may be of interest to users",
   "homepage_url": "https://github.com/jespino/mattermost-plugin-recommend",
   "support_url": "https://github.com/jespino/mattermost-plugin-recommend/issues",
   "release_notes_url": "https://github.com/jespino/mattermost-plugin-recommend/blob/master/CHANGELOG.md",
