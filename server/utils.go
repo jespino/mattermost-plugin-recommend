@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 func channelsMessage(text string, teamName string, channels []ChannelData, extraText string) string {
@@ -10,8 +11,9 @@ func channelsMessage(text string, teamName string, channels []ChannelData, extra
 	}
 	channelsList := ""
 	for _, channel := range channels {
-		channelsList += fmt.Sprintf("~%s ", channel.Name)
+		channelsList += fmt.Sprintf("~%s, ", channel.Name)
 	}
+	channelsList = strings.TrimSuffix(channelsList, ", ")
 	return fmt.Sprintf("%s%s%s\n\n", text, channelsList, extraText)
 }
 
