@@ -45,7 +45,7 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 	}
 
 	if !p.canReceiveRecommendations(args.UserId, args.TeamId) {
-		p.sendResponse(args.UserId, args.ChannelId, "You don't have permissions to get channels recommendations.", nil)
+		p.sendResponse(args.UserId, args.ChannelId, "You don't have permission to get channels recommendations.", nil)
 		return &model.CommandResponse{}, nil
 	}
 

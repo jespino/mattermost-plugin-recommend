@@ -11,7 +11,7 @@ import (
 
 const (
 	delayInSecons           = 6
-	moreRecommendationsText = "\n\nGet more recommendations using `/recommend` command."
+	moreRecommendationsText = "\n\nGet more recommendations using the `/recommend` command."
 )
 
 type Plugin struct {
@@ -163,7 +163,7 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 	if err != nil {
 		p.API.LogError(err.Error())
 	}
-	message += channelsMessage("Currently the most active channels in this team are: ", team.Name, suggestions, "")
+	message += channelsMessage("Currently, the most active channels in this team are: ", team.Name, suggestions, "")
 	channelsMentions := channelsMentionsMetadata(team.Name, suggestions)
 	allChannelsMentions := channelsMentions
 
