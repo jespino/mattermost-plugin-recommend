@@ -126,7 +126,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 	p.API.SendEphemeralPost(channelMember.UserId, &post)
 }
 
-func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMember, user *model.User) {
+func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMember, actor *model.User) {
 	if !p.getConfiguration().RecommendOnJoinTeam {
 		return
 	}
