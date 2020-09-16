@@ -6,7 +6,7 @@
     "support_url": "https://github.com/jespino/mattermost-plugin-recommend/issues",
     "release_notes_url": "https://github.com/jespino/mattermost-plugin-recommend/blob/master/CHANGELOG.md",
     "icon_path": "assets/icon.svg",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "min_server_version": "5.16.0",
     "server": {
         "executables": {
