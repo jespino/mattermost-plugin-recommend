@@ -51,7 +51,7 @@ const manifestStr = `
       },
       {
         "key": "ActivityThreshold",
-        "display_name": "Activity threashold",
+        "display_name": "Activity threshold",
         "type": "number",
         "help_text": "When the bot recommends you the most active channels, what is the time (in minutes) that is used to count activity. By default is a week. In instances with a lot of activity we recommend to adjust this to smaller value.",
         "placeholder": "",
