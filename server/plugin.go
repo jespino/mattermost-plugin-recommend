@@ -1,7 +1,6 @@
 package main
 
 import (
-	"sync"
 	"time"
 
 	"github.com/mattermost/mattermost-server/v5/model"
@@ -16,10 +15,9 @@ const (
 
 type Plugin struct {
 	plugin.MattermostPlugin
-	configurationLock sync.RWMutex
-	configuration     *configuration
-	Store             *DBStore
-	botID             string
+
+	Store *DBStore
+	botID string
 }
 
 func (p *Plugin) OnActivate() error {
@@ -65,11 +63,11 @@ func (p *Plugin) OnDeactivate() error {
 }
 
 func (p *Plugin) isInGracePeriod(user *model.User) bool {
-	return user.CreateAt+int64(p.getConfiguration().GracePeriod*1000) > model.GetMillis()
+	return user.CreateAt+int64(p.GetConfig().GracePeriod*1000) > model.GetMillis()
 }
 
 func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.ChannelMember, actor *model.User) {
-	if !p.getConfiguration().RecommendOnJoinChannel {
+	if !p.GetConfig().RecommendOnJoinChannel {
 		return
 	}
 
@@ -127,7 +125,7 @@ func (p *Plugin) UserHasJoinedChannel(c *plugin.Context, channelMember *model.Ch
 }
 
 func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMember, actor *model.User) {
-	if !p.getConfiguration().RecommendOnJoinTeam {
+	if !p.GetConfig().RecommendOnJoinTeam {
 		return
 	}
 
@@ -154,7 +152,7 @@ func (p *Plugin) UserHasJoinedTeam(c *plugin.Context, teamMember *model.TeamMemb
 		return
 	}
 
-	activityThreshold := p.getConfiguration().ActivityThreshold
+	activityThreshold := p.GetConfig().ActivityThreshold
 	if activityThreshold == 0 {
 		activityThreshold = 7 * 24 * 60 // A week
 	}
